@@ -1,0 +1,755 @@
+<?xml version="1.0" ?>
+<robot  xmlns:xacro="http://www.ros.org/wiki/xacro" name="polaris_ranger_ev">
+
+  <xacro:arg name="gpu" default="false"/>
+  <xacro:property name="gpu" value="$(arg gpu)" />
+
+  <material name="Black">
+      <color rgba="0.0 0.0 0.0 1.0"/>
+  </material>
+  <material name="Red">
+      <color rgba="0.8 0.8 0.8 1.0"/> 
+  </material>
+  <material name="White">
+      <color rgba="1.0 1.0 1.0 1.0"/>
+  </material>
+  <material name="Blue">
+      <color rgba="0.3 0.3 0.6 1.0"/>
+  </material>
+
+  <joint name="base_link_joint" type="fixed">
+      <parent link="base_link_polaris"/>
+      <child link="polaris_ranger_ev__chassis"/>
+      <origin rpy="0 0 0" xyz="0.85 0 -0.32"/>
+  </joint>
+  
+  <joint name="polaris_ranger_ev__front_left_steering_joint" type="revolute">
+      <parent link="polaris_ranger_ev__chassis"/>
+      <child link="polaris_ranger_ev__front_left_wheel_steering_block"/>
+      <origin rpy="1.57079 0 0" xyz="1.03 0.5 0.32"/>
+      <axis xyz="0  1  0"/>
+      <limit effort="10000.0" lower="-0.8727" upper="0.8727" velocity="1.0"/>
+  </joint>
+
+  <transmission name="polaris_ranger_ev__front_left_steering_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <actuator name="polaris_ranger_ev__front_left_steering_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+      <joint name="polaris_ranger_ev__front_left_steering_joint">
+
+<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      </joint>
+</transmission>
+  
+  <joint name="polaris_ranger_ev__front_left_wheel_joint" type="continuous">
+      <parent link="polaris_ranger_ev__front_left_wheel_steering_block"/>
+      <child link="polaris_ranger_ev__front_left_wheel"/>
+      <origin rpy="-3.09079 0 0" xyz="0 0 -0.1"/>
+      <axis xyz="0   8.3e-04   1"/>
+      <limit effort="0" velocity="100.0"/>
+  </joint> 
+  
+  <transmission name="polaris_ranger_ev__front_left_wheel_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <actuator name="polaris_ranger_ev__front_left_wheel_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+      <joint name="polaris_ranger_ev__front_left_wheel_joint">
+
+<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      </joint>
+</transmission>  
+
+  <joint name="polaris_ranger_ev__front_right_steering_joint" type="revolute">
+      <parent link="polaris_ranger_ev__chassis"/>
+      <child link="polaris_ranger_ev__front_right_wheel_steering_block"/>
+      <origin rpy="1.57079 0 0" xyz="1.03 -0.5  0.32"/>
+      <axis xyz="0  1  0"/>
+      <limit effort="10000.0" lower="-0.8727" upper="0.8727" velocity="1.0"/>  
+  </joint>  
+  <transmission name="polaris_ranger_ev__front_right_steering_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <actuator name="polaris_ranger_ev__front_right_steering_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+      <joint name="polaris_ranger_ev__front_right_steering_joint">
+
+<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      </joint>
+  </transmission>
+
+  <joint name="polaris_ranger_ev__front_right_wheel_joint" type="continuous">
+      <parent link="polaris_ranger_ev__front_right_wheel_steering_block"/>
+      <child link="polaris_ranger_ev__front_right_wheel"/>
+      <origin rpy="-0.05079 0 0" xyz="0   0   0.1"/>
+      <axis xyz="0   8.3e-04  -1"/>
+      <limit effort="0" velocity="100.0"/>  
+  </joint>  
+  
+  <transmission name="polaris_ranger_ev__front_right_wheel_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <actuator name="polaris_ranger_ev__front_right_wheel_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+      <joint name="polaris_ranger_ev__front_right_wheel_joint">
+
+<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      </joint>
+</transmission>  
+
+  <joint name="polaris_ranger_ev__rear_left_wheel_joint" type="continuous">
+      <parent link="polaris_ranger_ev__chassis"/>
+      <child link="polaris_ranger_ev__rear_left_wheel"/>
+      <origin rpy="-1.52000  0  0" xyz="-0.85  0.6   0.32"/>
+      <axis xyz="0   8.3e-04   1"/>
+      <limit effort="20000.0" velocity="100.0"/>  
+  </joint>  
+
+  <transmission name="polaris_ranger_ev__rear_left_wheel_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <actuator name="polaris_ranger_ev__rear_left_wheel_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+      <joint name="polaris_ranger_ev__rear_left_wheel_joint">
+
+<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      </joint>
+</transmission>  
+
+  <joint name="polaris_ranger_ev__rear_right_wheel_joint" type="continuous">
+      <parent link="polaris_ranger_ev__chassis"/>
+      <child link="polaris_ranger_ev__rear_right_wheel"/>
+      <origin rpy="1.52000  0  0" xyz="-0.85  -0.6  0.32"/>
+      <axis xyz="0  8.3e-04  -1"/>
+      <limit effort="20000.0" velocity="100.0"/>  
+  </joint>  
+
+  <transmission name="polaris_ranger_ev__rear_right_wheel_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <actuator name="polaris_ranger_ev__rear_right_wheel_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+      <joint name="polaris_ranger_ev__rear_right_wheel_joint">
+
+<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      </joint>
+</transmission>
+
+  <joint name="camera_joint" type="fixed">
+      <axis xyz="0 1 0" />
+      <origin xyz="0.34 0 1.94" rpy="0 0 0"/>
+      <parent link="polaris_ranger_ev__chassis"/>
+      <child link="camera_link"/>
+  </joint>
+
+<!-- Camera -->
+  <link name="camera_link">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+    <box size="0.05 0.05 0.05"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+    <box size="0.05 0.05 0.05"/>
+      </geometry>
+    </visual>
+
+    <inertial>
+      <mass value="1e-5" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+    </inertial>
+  </link>
+
+<!-- camera -->
+  <gazebo reference="camera_link">
+    <material>Gazebo/Black</material>
+    <sensor type="camera" name="camera1">
+      <update_rate>30.0</update_rate>
+      <camera name="head">
+        <horizontal_fov>1.3962634</horizontal_fov>
+        <image>
+          <width>800</width>
+          <height>800</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.02</near>
+          <far>300</far>
+        </clip>
+        <noise>
+          <type>gaussian</type>
+          <!-- Noise is sampled independently per pixel on each frame.
+               That pixel's noise value is added to each of its color
+               channels, which at that point lie in the range [0,1]. -->
+          <mean>0.0</mean>
+          <stddev>0.007</stddev>
+        </noise>
+      </camera>
+      <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+        <alwaysOn>true</alwaysOn>
+        <updateRate>0.0</updateRate>
+        <cameraName>rrbot/camera1</cameraName>
+        <imageTopicName>image_raw</imageTopicName>
+        <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+        <frameName>camera_link</frameName>
+        <hackBaseline>0.07</hackBaseline>
+        <distortionK1>0.0</distortionK1>
+        <distortionK2>0.0</distortionK2>
+        <distortionK3>0.0</distortionK3>
+        <distortionT1>0.0</distortionT1>
+        <distortionT2>0.0</distortionT2>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+<link name ="base_link_polaris"/>  
+
+  <link name="polaris_ranger_ev__chassis">
+      <inertial>
+      <mass value="800.0"/>
+      <origin rpy="0  0  0" xyz="0.1  0  0.4"/>
+      <inertia ixx="140" ixy="0.0" ixz="0.0" iyy="550" iyz="0.0" izz="550"/>
+      </inertial>
+      <collision>
+      <origin rpy="0  0  0" xyz="0.1  0  0.37"/>
+      <geometry>
+      <box size="1.5 1.34 0.06"/>
+      </geometry>
+      </collision>
+      <visual>
+      <origin rpy="0  0  0" xyz="0.1  0 0.37"/>
+      <geometry>
+      <box size="1.5 1.34 0.06"/>
+      </geometry>
+      </visual>
+      <collision>
+      <origin rpy="0  0  0" xyz="-0.9  0  0.9"/>
+      <geometry><box size="0.9 1.2 0.01"/>
+      </geometry>
+      </collision>
+      <visual>
+      <origin rpy="0  0  0" xyz="-0.9  0  0.9"/>
+      <geometry>
+      <box size="0.9 1.2 0.01"/>
+      </geometry>
+      </visual>
+      <collision>
+      <origin rpy="0  0  0" xyz="-0.45 0 1.02499"/>
+      <geometry>
+      <box size="0.05 1.2 0.25"/>
+      </geometry>
+      </collision>
+      <visual>
+      <origin rpy="0  0  0" xyz="-0.45 0 1.02499"/>
+      <geometry>
+      <box size="0.05 1.2 0.25"/>
+      </geometry>
+      </visual>
+      <collision>
+      <origin rpy="0  0  0" xyz="-1.35 0 1.02499"/>
+      <geometry>
+      <box size="0.05 1.2 0.25"/>
+      </geometry>
+      </collision>
+      <visual>
+      <origin rpy="0  0  0" xyz="-1.35 0 1.02499"/>
+      <geometry>
+      <box size="0.05 1.2 0.25"/>
+      </geometry>
+      </visual>
+      <collision>
+      <origin rpy="0  0  0" xyz="-0.9 0.6 1.02499"/>
+      <geometry>
+      <box size="0.9 0.05 0.25"/>
+      </geometry>
+      </collision>
+      <visual>
+      <origin rpy="0  0  0" xyz="-0.9 0.6 1.02499"/>
+      <geometry>
+      <box size="0.9 0.05 0.25"/>
+      </geometry>
+      </visual>
+      <collision>
+      <origin rpy="0  0  0" xyz="-0.9 -0.6 1.02499"/>
+      <geometry>
+      <box size="0.9 0.05 0.25"/>
+      </geometry>
+      </collision>
+      <visual>
+      <origin rpy="0  0  0" xyz="-0.9 -0.6 1.02499"/>
+      <geometry>
+      <box size="0.9 0.05 0.25"/>
+      </geometry>
+      </visual>
+      <collision>
+      <origin rpy="0  0  0" xyz="-0.1  0  0.56"/>
+      <geometry>
+      <box size="0.6 1.22 0.50"/>
+      </geometry>
+      </collision>
+      <visual>
+      <origin rpy="0  0  0" xyz="-0.1  0  0.56"/>
+      <geometry>
+      <box size="0.6 1.22 0.50"/>
+      </geometry>
+      </visual>
+      <collision>
+      <origin rpy="0  0  0" xyz="-0.1  0  0.81"/>
+      <geometry>
+      <box size="0.6 1.15 0.1"/>
+      </geometry>
+      </collision>
+      <visual>
+      <origin rpy="0  0  0" xyz="-0.1  0  0.81"/>
+      <geometry>
+      <box size="0.6 1.15 0.1"/>
+      </geometry>
+      </visual>
+      <collision>
+      <origin rpy="0  -0.2  0" xyz="-0.3 0 1.125"/>
+      <geometry>
+      <box size="0.06 1.0 0.4"/>
+      </geometry>
+      </collision>
+      <visual>
+      <origin rpy="0  -0.2  0" xyz="-0.3 0 1.125"/>
+      <geometry>
+      <box size="0.06 1.0 0.4"/>
+      </geometry>
+      </visual>
+      <collision>
+      <origin rpy="0  0  0" xyz="1.05  0  0.7"/>
+      <geometry>
+      <box size="0.58 1.0 0.8"/>
+      </geometry>
+      </collision>
+      <visual>
+      <origin rpy="0  0  0" xyz="1.05  0  0.7"/>
+      <geometry>
+      <box size="0.58 1.0 0.8"/>
+      </geometry>
+      </visual>
+      <collision>
+      <origin rpy="0  -0.2  0" xyz="-0.3 0.61 1.055"/>
+      <geometry>
+      <cylinder length="0.17" radius="0.02"/>
+      </geometry>
+      </collision>
+      <visual>
+      <origin rpy="0  -0.2  0" xyz="-0.3 0.61 1.055"/>
+      <geometry>
+      <cylinder length="0.17" radius="0.02"/>
+      </geometry>
+      </visual>
+      <collision>
+      <origin rpy="0  -0.2  0" xyz="-0.3   -0.61   1.055"/>
+      <geometry>
+      <cylinder length="0.17" radius="0.02"/>
+      </geometry>
+      </collision>
+      <visual>
+      <origin rpy="0  -0.2  0" xyz="-0.3   -0.61   1.055"/>
+      <geometry>
+      <cylinder length="0.17" radius="0.02"/>
+      </geometry>
+      </visual>
+      <collision>
+      <origin rpy="3.14159  1.53159  3.14159" xyz="0  0.61  1.92"/>
+      <geometry>
+      <cylinder length="0.68" radius="0.03"/>
+      </geometry>
+      </collision>
+      <visual>
+      <origin rpy="3.14159  1.53159  3.14159" xyz="0  0.61  1.92"/>
+      <geometry>
+      <cylinder length="0.68" radius="0.03"/>
+      </geometry>
+      </visual>
+      <collision>
+      <origin rpy="3.14159  1.53159  3.14159" xyz="0   -0.61  1.92"/>
+      <geometry>
+      <cylinder length="0.68" radius="0.03"/>
+      </geometry>
+      </collision>
+      <visual>
+      <origin rpy="3.14159  1.53159  3.14159" xyz="0   -0.61  1.92"/>
+      <geometry>
+      <cylinder length="0.68" radius="0.03"/>
+      </geometry>
+      </visual>
+      <collision>
+      <origin rpy="1.57079  0  0" xyz="0.325  0  1.89"/>
+      <geometry>
+      <cylinder length="1.22" radius="0.03"/>
+      </geometry>
+      </collision>
+      <visual>
+      <origin rpy="1.57079  0  0" xyz="0.325  0  1.89"/>
+      <geometry>
+      <cylinder length="1.22" radius="0.03"/>
+      </geometry>
+      </visual>
+      <collision>
+      <origin rpy="1.57079  0  0" xyz="-0.33  0  1.92"/>
+      <geometry>
+      <cylinder length="1.22" radius="0.03"/>
+      </geometry>
+      </collision>
+      <visual>
+      <origin rpy="1.57079  0  0" xyz="-0.33  0  1.92"/>
+      <geometry>
+      <cylinder length="1.22" radius="0.03"/>
+      </geometry>
+      </visual>
+      <collision>
+      <origin rpy="0   -0.44  0" xyz="0.54  0.61  1.45"/>
+      <geometry>
+      <cylinder length="1.04" radius="0.03"/>
+      </geometry>
+      </collision>
+      <visual>
+      <origin rpy="0   -0.44  0" xyz="0.54  0.61  1.45"/>
+      <geometry>
+      <cylinder length="1.04" radius="0.03"/>
+      </geometry>
+      </visual>
+      <collision>
+      <origin rpy="0   -0.44  0" xyz="0.54 -0.61  1.45"/>
+      <geometry>
+      <cylinder length="1.04" radius="0.03"/>
+      </geometry>
+      </collision>
+      <visual>
+      <origin rpy="0   -0.44  0" xyz="0.54 -0.61  1.45"/>
+      <geometry>
+      <cylinder length="1.04" radius="0.03"/>
+      </geometry>
+      </visual>
+      <collision>
+      <origin rpy="0  0.35  0" xyz="0.64  -0.61  0.7"/>
+      <geometry>
+      <cylinder length="0.72" radius="0.03"/>
+      </geometry>
+      </collision>
+      <visual>
+      <origin rpy="0  0.35  0" xyz="0.64 -0.61  0.7"/>
+      <geometry>
+      <cylinder length="0.72" radius="0.03"/>
+      </geometry>
+      </visual>
+      <collision>
+      <origin rpy="0  0.35  0" xyz="0.64  0.61  0.7"/>
+      <geometry>
+      <cylinder length="0.72" radius="0.03"/>
+      </geometry>
+      </collision>
+      <visual>
+      <origin rpy="0  0.35  0" xyz="0.64  0.61  0.7"/>
+      <geometry>
+      <cylinder length="0.72" radius="0.03"/>
+      </geometry>
+      </visual>
+      <collision>
+      <origin rpy="0   -0.14  0" xyz="-0.37  0.61  1.25"/>
+      <geometry>
+      <cylinder length="0.90" radius="0.03"/>
+      </geometry>
+      </collision>
+      <visual>
+      <origin rpy="0   -0.14  0" xyz="-0.37  0.61  1.25"/>
+      <geometry>
+      <cylinder length="0.90" radius="0.03"/>
+      </geometry>
+      </visual>
+      <collision>
+      <origin rpy="0   -0.14  0" xyz="-0.37 -0.61  1.25"/>
+      <geometry>
+      <cylinder length="0.90" radius="0.03"/>
+      </geometry>
+      </collision>
+      <visual>
+      <origin rpy="0  -0.14  0" xyz="-0.37 -0.61  1.25"/>
+      <geometry>
+      <cylinder length="0.90" radius="0.03"/>
+      </geometry>
+      </visual>
+      <collision>
+      <origin rpy="0   -0.14  0" xyz="-0.37   0.155  1.25"/>
+      <geometry>
+      <cylinder length="0.90" radius="0.023"/>
+      </geometry>
+      </collision>
+      <visual>
+      <origin rpy="0  -0.14  0" xyz="-0.37   0.155  1.25"/>
+      <geometry>
+      <cylinder length="0.90" radius="0.023"/>
+      </geometry>
+      </visual>
+      <collision>
+      <origin rpy="0  -0.14  0" xyz="-0.37  -0.155  1.25"/>
+      <geometry>
+      <cylinder length="0.90" radius="0.023"/>
+      </geometry>
+      </collision>
+      <visual>
+      <origin rpy="0  -0.14  0" xyz="-0.37  -0.155  1.25"/>
+      <geometry>
+      <cylinder length="0.90" radius="0.023"/>
+      </geometry>
+      </visual>
+      <collision>
+      <origin rpy="0  0.4  0" xyz="-0.38  0.61  1.82"/>
+      <geometry>
+      <cylinder length="0.29" radius="0.03"/>
+      </geometry>
+      </collision>
+      <visual>
+      <origin rpy="0  0.4  0" xyz="-0.38  0.61  1.82"/>
+      <geometry>
+      <cylinder length="0.29" radius="0.03"/>
+      </geometry>
+      </visual>
+      <collision>
+      <origin rpy="0  0.4  0" xyz="-0.38 -0.61  1.82"/>
+      <geometry>
+      <cylinder length="0.29" radius="0.03"/>
+      </geometry>
+      </collision>
+      <visual>
+      <origin rpy="0  0.4  0" xyz="-0.38 -0.61  1.82"/>
+      <geometry>
+      <cylinder length="0.29" radius="0.03"/>
+      </geometry>
+      </visual>
+      <collision>
+      <origin rpy="0  0.4  0" xyz="-0.38   0.155  1.82"/>
+      <geometry>
+      <cylinder length="0.29" radius="0.023"/>
+      </geometry>
+      </collision>
+      <visual>
+      <origin rpy="0  0.4  0" xyz="-0.38   0.155  1.82"/>
+      <geometry>
+      <cylinder length="0.29" radius="0.023"/>
+      </geometry>
+      </visual>
+      <collision>
+      <origin rpy="0  0.4  0" xyz="-0.38  -0.155  1.82"/>
+      <geometry>
+      <cylinder length="0.29" radius="0.023"/>
+      </geometry>
+      </collision>
+      <visual>
+      <origin rpy="0  0.4  0" xyz="-0.38  -0.155  1.82"/>
+      <geometry>
+      <cylinder length="0.29" radius="0.023"/>
+      </geometry>
+      </visual> 
+  </link>  
+
+  <gazebo reference="polaris_ranger_ev__chassis">
+      <material>Gazebo/Red</material>
+      </gazebo>  
+
+  <link name="polaris_ranger_ev__rear_left_wheel">
+      <inertial>
+      <mass value="12"/>
+      <origin rpy="0  0  0" xyz="0  0  0"/>
+      <inertia ixx="0.5" ixy="0.0" ixz="0.0" iyy="0.5" iyz="0.0" izz="1.0"/>
+      </inertial>
+      <collision>
+      <origin rpy="0  0  0" xyz="0  0  0"/><material name="Black">
+      <color rgba="0.0 0.0 0.0 1.0"/>  
+  </material>  
+  <material name="Red">
+      <color rgba="0.8 0.0 0.0 1.0"/>  
+  </material>  
+  <material name="White">
+      <color rgba="1.0 1.0 1.0 1.0"/>  
+  </material>  
+  <material name="Blue">
+      <color rgba="0.0 0.0 0.8 1.0"/>  
+  </material>
+      <geometry>
+      <cylinder length="0.23" radius="0.32"/>
+      </geometry>
+      </collision>
+      <visual>
+      <origin rpy="0  0  0" xyz="0  0  0"/>
+      <geometry>
+      <cylinder length="0.23" radius="0.32"/>
+      </geometry>
+      </visual>  
+  </link>  
+
+  <gazebo reference="polaris_ranger_ev__rear_left_wheel">
+      <mu1>0.7</mu1>
+      <material>Gazebo/Black</material>
+      </gazebo>  
+
+  <link name="polaris_ranger_ev__rear_right_wheel">
+      <inertial>
+      <mass value="12"/>
+      <origin rpy="0  0  0" xyz="0  0  0"/>
+      <inertia ixx="0.5" ixy="0.0" ixz="0.0" iyy="0.5" iyz="0.0" izz="1.0"/>
+      </inertial>
+      <collision>
+      <origin rpy="0  0  0" xyz="0  0  0"/>
+      <geometry>
+      <cylinder length="0.23" radius="0.32"/>
+      </geometry>
+      </collision>
+      <visual>
+      <origin rpy="0  0  0" xyz="0  0  0"/>
+      <geometry>
+      <cylinder length="0.23" radius="0.32"/>
+      </geometry>
+      </visual>  
+  </link>  
+
+  <gazebo reference="polaris_ranger_ev__rear_right_wheel">
+      <mu1>0.7</mu1>
+      <material>Gazebo/Black</material>
+      </gazebo>  
+
+  <link name="polaris_ranger_ev__front_right_wheel">
+      <inertial>
+      <mass value="12"/>
+      <origin rpy="0  0  0" xyz="0  0  0"/>
+      <inertia ixx="0.5" ixy="0.0" ixz="0.0" iyy="0.5" iyz="0.0" izz="1.0"/>
+      </inertial>
+      <collision>
+      <origin rpy="0  0  0" xyz="0  0  0"/>
+      <geometry>
+      <cylinder length="0.23" radius="0.32"/>
+      </geometry>
+      </collision>
+      <visual>
+      <origin rpy="0  0  0" xyz="0  0  0"/>
+      <geometry>
+      <cylinder length="0.23" radius="0.32"/>
+      </geometry>
+      </visual>  
+  </link>  
+
+  <gazebo reference="polaris_ranger_ev__front_right_wheel">
+      <mu1>0.7</mu1>
+      <material>Gazebo/Black</material>  
+  </gazebo>  
+
+  <link name="polaris_ranger_ev__front_right_wheel_steering_block">
+      <inertial>
+      <mass value="1"/>
+      <origin rpy="0  0  0" xyz="0  0  0"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+      </inertial>
+      <collision name="polaris_ranger_ev__front_right_wheel_steering_block_collision">
+      <origin rpy="0  0  0" xyz="0  0  0"/>
+      <geometry>
+      <cylinder length="0.01" radius="0.05"/>
+      </geometry>
+      </collision>
+      <visual name="polaris_ranger_ev__front_right_wheel_steering_block_vis">
+      <origin rpy="0  0  0" xyz="0  0  0"/>
+      <geometry>
+      <cylinder length="0.01" radius="0.05"/>
+      </geometry>
+      </visual>  
+  </link>  
+  <link name="polaris_ranger_ev__front_left_wheel">
+      <inertial>
+      <mass value="12"/>
+      <origin rpy="0  0  0" xyz="0  0  0"/>
+      <inertia ixx="0.5" ixy="0.0" ixz="0.0" iyy="0.5" iyz="0.0" izz="1.0"/>
+      </inertial>
+      <collision>
+      <origin rpy="0  0  0" xyz="0  0  0"/>
+      <geometry>
+      <cylinder length="0.23" radius="0.32"/>
+      </geometry>
+      </collision>
+      <visual>
+      <origin rpy="0  0  0" xyz="0  0  0"/>
+      <geometry>
+      <cylinder length="0.23" radius="0.32"/>
+      </geometry>
+      </visual>  
+  </link>  
+  
+  <gazebo reference="polaris_ranger_ev__front_left_wheel">
+      <mu1>0.7</mu1>
+      <material>Gazebo/Black</material>  
+  </gazebo>  
+
+  <link name="polaris_ranger_ev__front_left_wheel_steering_block">
+      <inertial>
+      <mass value="1"/>
+      <origin rpy="0  0  0" xyz="0  0  0"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+      </inertial>
+      <collision name="polaris_ranger_ev__front_left_wheel_steering_block_collision">
+      <origin rpy="0  0  0" xyz="0  0  0"/>
+      <geometry>
+      <cylinder length="0.01" radius="0.05"/>
+      </geometry>
+      </collision>
+      <visual name="polaris_ranger_ev__front_left_wheel_steering_block_visual">
+      <origin rpy="0  0  0" xyz="0  0  0"/>
+      <geometry>
+      <cylinder length="0.01" radius="0.05"/>
+      </geometry>
+      </visual>  
+  </link>  
+
+  <gazebo reference="base_link_polaris">
+      <gravity>true</gravity>
+      <sensor name="imu_sensor" type="imu">
+      <always_on>true</always_on>
+      <update_rate>100</update_rate>
+      <visualize>true</visualize>
+      <topic>imu</topic>
+      <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+      <topicName>imu</topicName>
+      <bodyName>imu_link</bodyName>
+      <updateRateHZ>10.0</updateRateHZ>
+      <gaussianNoise>0.0</gaussianNoise>
+      <xyzOffset>0 0 0</xyzOffset>
+      <rpyOffset>0 0 0</rpyOffset>
+      <frameName>imu_link</frameName>
+      </plugin>
+      <pose>0.63 0.08 1.55 0 0 0</pose>
+      </sensor>  
+  </gazebo>  
+  
+  <gazebo>
+      <plugin name="novatel_gps_sim" filename="libhector_gazebo_ros_gps.so">
+      <alwaysOn>1</alwaysOn>
+      <updateRate>10.0</updateRate>
+      <bodyName>base_link_polaris</bodyName>
+      <topicName>fix</topicName>
+      <velocityTopicName>fix_velocity</velocityTopicName>
+      <drift>5.0 5.0 5.0</drift>
+      <gaussianNoise>0.1 0.1 0.1</gaussianNoise>
+      <velocityDrift>0 0 0</velocityDrift>
+      <velocityGaussianNoise>0.1 0.1 0.1</velocityGaussianNoise>
+      <pose>0.63 0.08 1.55 0 0 0</pose>
+      </plugin>  
+  </gazebo> 
+
+
+<!--2.16-->  
+
+  <gazebo>
+      <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+      <robotNamespace>/polaris</robotNamespace>
+      <legacyModeNS>true</legacyModeNS>
+      </plugin>  
+  </gazebo>
+
+</robot>

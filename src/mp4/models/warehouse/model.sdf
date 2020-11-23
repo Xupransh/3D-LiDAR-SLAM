@@ -1,0 +1,151 @@
+<?xml version="1.0"?>
+<sdf version="1.6">
+<model name='warehouse'>
+  <static>true</static>
+  <pose frame=''>0 0 0 0 -0 0</pose>
+
+    <link name='Wall_1'>
+      <collision name='Wall_1_Collision'>
+        <geometry>
+          <box>
+            <size>30 .15239 2.5</size>
+          </box>
+        </geometry>
+        <pose frame=''>0 0 1.25 0 -0 0</pose>
+      </collision>
+      <visual name='Wall_1_Visual'>
+        <pose frame=''>0 0 1.25 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>30 .15239 2.5</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>model://warehouse/materials/scripts</uri>
+            <uri>model://warehouse/materials/textures</uri>
+            <name>RepeatedTexture</name>
+          </script>
+        </material>
+      </visual>
+      <pose frame=''>0 15.06 0 0 -0 0</pose>
+    </link>
+
+
+    <link name='Wall_2'>
+      <collision name='Wall_2_Collision'>
+        <geometry>
+          <box>
+            <size>30 .15239 2.5</size>
+          </box>
+        </geometry>
+        <pose frame=''>0 0 1.25 0 -0 0</pose>
+      </collision>
+      <visual name='Wall_2_Visual'>
+        <pose frame=''>0 0 1.25 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>30 .15239 2.5</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>model://warehouse/materials/scripts</uri>
+            <uri>model://warehouse/materials/textures</uri>
+            <name>RepeatedTexture</name>
+          </script>
+        </material>
+      </visual>
+      <pose frame=''>-14.92 0 0 0 -0 1.57079632679</pose>
+    </link>
+
+
+    <link name='Wall_3'>
+      <collision name='Wall_3_Collision'>
+        <geometry>
+          <box>
+            <size>30 .15239 2.5</size>
+          </box>
+        </geometry>
+        <pose frame=''>0 0 1.25 0 -0 0</pose>
+      </collision>
+      <visual name='Wall_3_Visual'>
+        <pose frame=''>0 0 1.25 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>30 .15239 2.5</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>model://warehouse/materials/scripts</uri>
+            <uri>model://warehouse/materials/textures</uri>
+            <name>RepeatedTexture</name>
+          </script>
+        </material>
+      </visual>
+      <pose frame=''>0 -15.08 0 0 -0 0</pose>
+    </link>
+
+
+    <link name='Wall_4'>
+      <collision name='Wall_4_Collision'>
+        <geometry>
+          <box>
+            <size>30 .15239 2.5</size>
+          </box>
+        </geometry>
+        <pose frame=''>0 0 1.25 0 -0 0</pose>
+      </collision>
+      <visual name='Wall_4_Visual'>
+        <pose frame=''>0 0 1.25 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>30 .15239 2.5</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>model://warehouse/materials/scripts</uri>
+            <uri>model://warehouse/materials/textures</uri>
+            <name>RepeatedTexture</name>
+          </script>
+        </material>
+      </visual>
+      <pose frame=''>14.92 0 0 0 -0 1.57079632679</pose>
+    </link>
+
+
+  <link name='Floor'>
+    <collision name='Floor_Collision'>
+      <geometry>
+        <box>
+          <size>30 30 .005</size>
+        </box>
+      </geometry>
+      <pose frame=''>0 0 1.25 0 -0 0</pose>
+    </collision>
+    <visual name='Floor_Visual'>
+      <pose frame=''>0 0 1.25 0 -0 0</pose>
+      <geometry>
+        <box>
+          <size>30 30 .005</size>
+        </box>
+      </geometry>
+      <material>
+        <script>
+          <uri>model://warehouse/materials/scripts</uri>
+          <uri>model://warehouse/materials/textures</uri>
+          <name>RepeatedFloor</name>
+        </script>
+        <ambient>1 1 1 1</ambient>
+      </material>
+      <meta>
+        <layer>0</layer>
+      </meta>
+    </visual>
+    <pose frame=''>0 0 -1.25 0 -0 0</pose>
+  </link>
+
+</model>
+</sdf>

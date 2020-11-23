@@ -1,0 +1,37 @@
+material RepeatedTexture
+{
+  technique
+  {
+    pass
+    {
+
+      texture_unit
+      {
+        // Relative to the location of the material script
+        texture ../textures/wall.png 2d
+        // Repeat the texture over the surface (4 per face)
+        // scale .25 .25
+
+      }
+    }
+  }
+}
+
+
+material RepeatedFloor
+{
+  technique
+  {
+    pass
+    {
+      texture_unit
+      {
+        // Relative to the location of the material script
+        texture ../textures/floor.png
+        // Repeat the texture over the surface (4 per face)
+        scale .25 .25
+
+      }
+    }
+  }
+}

@@ -8,6 +8,7 @@ from gazebo_msgs.msg import  ModelState
 from gazebo_msgs.srv import GetModelState
 from maze import Maze, Robot
 from particle_filter import particleFilter
+from SLAM import SLAM
 
 def main(window_width, window_height, num_particles, sensor_limit):
     rospy.init_node("navigator")
@@ -20,6 +21,9 @@ def main(window_width, window_height, num_particles, sensor_limit):
     with open('obstacle_list.data', 'rb') as filehandle:
         # read the data as binary data stream
         obstacle = pickle.load(filehandle)
+    
+    # Create blank SLAM map
+    map = np.zeros((200,200,3))
 
     for (x,y) in obstacle:
         maze[y+100,x+100] = 1
@@ -59,11 +63,19 @@ def main(window_width, window_height, num_particles, sensor_limit):
 
     bob = Robot(x = 0, y = 0,heading = 0, maze = world, sensor_limit = sensor_limit)
  
-    # Run PF localization
-    pf = particleFilter(bob = bob, world = world, num_particles = num_particles, sensor_limit = sensor_limit,
-                        x_start = x_start, y_start = y_start)
+    # # Run PF localization
+    # pf = particleFilter(bob = bob, world = world, num_particles = num_particles, sensor_limit = sensor_limit,
+    #                     x_start = x_start, y_start = y_start)
+    # pf.runFilter()
     
-    pf.runFilter()
+    # Run SLAM
+    w = 200
+    h = 200
+
+    slam = SLAM( robot=bob, width = w, height = h, x_start = bob.x + w/2, y_start = bob.y + h/2, heading = robot.heading)
+    slam.runSLAM()
+    
+    
 
 if __name__ == '__main__':
 
@@ -86,5 +98,8 @@ if __name__ == '__main__':
     window_height = window_height_default
     num_particles = argv.num_particles
     sensor_limit = argv.sensor_limit
+
+    image = np.zeros()
+
     
-    main(window_width = window_width, window_height = window_height, num_particles = num_particles, sensor_limit = sensor_limit)
+    main(window_width = window_width, window_height = window_height, num_particles = num_particles, sensor_limit = sensor_limit, map= image)

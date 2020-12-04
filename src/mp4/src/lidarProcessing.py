@@ -62,15 +62,15 @@ class LidarProcessing:
     def getBirdsEyeView(self):
         return self.__birds_eye_view
 
+    def getCurrentPoints(self):
+        return self.current_x_points, self.current_y_points
+
 
     def __pointCloudHandler(self, data):
         """
             Callback function for whenever the lidar point clouds are detected
-
             Input: data - lidar point cloud
-
             Output: None
-
             Side Effects: updates the birds eye view image
         """
         gen = point_cloud2.readgen = point_cloud2.read_points(cloud=data, field_names=('x', 'y', 'z', 'ring'))
@@ -83,15 +83,18 @@ class LidarProcessing:
 
     def construct_birds_eye_view(self, data):
         """
+
+    def transformPointCloud(self):
             Call back function that get the distance between vehicle and nearest wall in given direction
             The calculated values are stored in the class member variables
-
             Input: data - lidar point cloud
         """
         # create image from_array
         x_max = 1 + int((self.side_range[1] - self.side_range[0]) / self.resolution)
         y_max = 1 + int((self.fwd_range[1] - self.fwd_range[0]) / self.resolution)
         im = np.zeros([y_max, x_max], dtype=np.uint8)
+        self.__raw_point_cloud = data
+
 
         if len(data) == 0:
             return im
@@ -162,20 +165,6 @@ class LidarProcessing:
         self.x_front = np.mean(x_points[indices])
         self.y_front = np.mean(y_points[indices])
         
-        ## TODO: Add 4 additional sensor directions #####
-        # Handle sensor at 4 diagnal direction
-        # Getting sensor reading for front left
-        
-
-        # Getting sensor reading for rear left
-        
-
-        # Getting sensor reading for front right
-        
-
-        # Getting sensor reading for rear right
-        
-        ###############
 
         # convert points to image coords with resolution
         x_img = np.floor(-y_points / self.resolution).astype(np.int32)
@@ -185,61 +174,14 @@ class LidarProcessing:
         x_img -= int(np.floor(self.side_range[0] / self.resolution))
         y_img += int(np.ceil(self.fwd_range[1] / self.resolution))
             
+        self.current_x_points = x_img
+        self.current_y_points = y_img
+
         im[y_img, x_img] = pixel_vals
 
         self.__birds_eye_view = im
 
-        img = self.__birds_eye_view.astype(np.uint8)
-        img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
-
-        # Visualize sensor readings at 4 orthogonal direction
-        center = (self.vehicle_x, self.vehicle_y)
-        cv2.circle(img, center, 5, (0,0,255), -1, 8, 0)
-        
-        center = self.convert_to_image(self.x_front, self.y_front)
-        cv2.circle(img, center, 5, (0,255,0), -1, 8, 0)
-        if not np.isnan(self.x_front) and not np.isnan(self.y_front):
-            cv2.arrowedLine(img, (self.vehicle_x,self.vehicle_y), center, (255,0,0))
-        
-        center = self.convert_to_image(self.x_rear, self.y_rear)
-        cv2.circle(img, center, 5, (0,255,0), -1, 8, 0)
-        if not np.isnan(self.x_rear) and not np.isnan(self.y_rear):
-            cv2.arrowedLine(img, (self.vehicle_x,self.vehicle_y), center, (255,0,0))
-        
-        center = self.convert_to_image(self.x_left, self.y_left)
-        cv2.circle(img, center, 5, (0,255,0), -1, 8, 0)
-        if not np.isnan(self.x_left) and not np.isnan(self.y_left):
-            cv2.arrowedLine(img, (self.vehicle_x,self.vehicle_y), center, (255,0,0))
-        
-        center = self.convert_to_image(self.x_right, self.y_right)
-        cv2.circle(img, center, 5, (0,255,0), -1, 8, 0)
-        if not np.isnan(self.x_right) and not np.isnan(self.y_right):
-            cv2.arrowedLine(img, (self.vehicle_x,self.vehicle_y), center, (255,0,0))
-        
-        # Visualize sensor readings at 4 diagnal direction
-        center = self.convert_to_image(self.x_front_left, self.y_front_left)
-        cv2.circle(img, center, 5, (0,255,0), -1, 8, 0)
-        if not np.isnan(self.x_front_left) and not np.isnan(self.y_front_left):
-            cv2.arrowedLine(img, (self.vehicle_x,self.vehicle_y), center, (255,0,0))
-
-        center = self.convert_to_image(self.x_rear_left, self.y_rear_left)
-        cv2.circle(img, center, 5, (0,255,0), -1, 8, 0)
-        if not np.isnan(self.x_rear_left) and not np.isnan(self.y_rear_left):
-            cv2.arrowedLine(img, (self.vehicle_x,self.vehicle_y), center, (255,0,0))
-
-        center = self.convert_to_image(self.x_front_right, self.y_front_right)
-        cv2.circle(img, center, 5, (0,255,0), -1, 8, 0)
-        if not np.isnan(self.x_front_right) and not np.isnan(self.y_front_right):
-            cv2.arrowedLine(img, (self.vehicle_x,self.vehicle_y), center, (255,0,0))
-
-        center = self.convert_to_image(self.x_rear_right, self.y_rear_right)
-        cv2.circle(img, center, 5, (0,255,0), -1, 8, 0)
-        if not np.isnan(self.x_rear_right) and not np.isnan(self.y_rear_right):
-            cv2.arrowedLine(img, (self.vehicle_x,self.vehicle_y), center, (255,0,0))
-        birds_eye_im = self.cvBridge.cv2_to_imgmsg(img, 'bgr8')
-
-        self.birdsEyeViewPub.publish(birds_eye_im)
-
+        self.birdsEyeViewPub.publish(im)
 
     def convert_to_image(self, x, y):
         x_img = np.floor(-y / self.resolution).astype(np.int32)
@@ -252,9 +194,7 @@ class LidarProcessing:
     def processLidar(self):
         """
             Publishes birds eye view image
-
             Inputs: None
-
             Outputs: None
         """
 
@@ -285,6 +225,3 @@ class LidarProcessing:
             rear_right = self.sensor_limit
         
         return [front*100, right*100, rear*100, left*100]
-
-
-        

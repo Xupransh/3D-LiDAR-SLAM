@@ -2,14 +2,14 @@ import rospy
 from gazebo_msgs.msg import  ModelState
 from controller import bicycleModel
 import time
-
+from SLAM import SLAM
 
 if __name__ == "__main__":
     rospy.init_node("model_dynamics")
     model = bicycleModel()
 
     endList = 0
-
+    
 
     pos_list = [[100,53],[80,57],[60,56],[50,57],[40,58],[35,55],[34,44],[40,39],[45,40],[55,40],[68,40],[75,30],[75,28],[83,22],[104,22],[110,34],[102,39],[96,47]]
     pos_idx = 0
@@ -44,3 +44,4 @@ if __name__ == "__main__":
             model.setModelState(currState, targetState)
 
     rospy.spin()
+    

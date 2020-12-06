@@ -10,7 +10,7 @@ from maze import Maze, Robot
 from particle_filter import particleFilter
 from slam import SLAM
 
-def main(window_width, window_height, num_particles, sensor_limit):
+def main(window_width, window_height):
     rospy.init_node("navigator")
 
     window = turtle.Screen()
@@ -62,17 +62,9 @@ def main(window_width, window_height, num_particles, sensor_limit):
     world.show_maze()
 
     bob = Robot(x = 0, y = 0,heading = 0, maze = world, sensor_limit = sensor_limit)
- 
-    # # Run PF localization
-    # pf = particleFilter(bob = bob, world = world, num_particles = num_particles, sensor_limit = sensor_limit,
-    #                     x_start = x_start, y_start = y_start)
-    # pf.runFilter()
     
     # Run SLAM
-    w = 1200
-    h = 750
-
-    slam = SLAM( robot=bob, width = w, height = h, x_start = bob.x + w/2, y_start = bob.y + h/2, heading = bob.heading)
+    slam = SLAM( robot=bob, width = window_width, height = window_height, x_start = bob.x + window_width/2, y_start = bob.y + window_height/2, heading = bob.heading)
     slam.runSLAM()
     
     
@@ -86,20 +78,13 @@ if __name__ == '__main__':
     window_height_default = 750
 
     # Default values for the parameters for particle filter
-    num_particles_default = 1000
-    sensor_limit_default = 15
     
-    parser.add_argument('--num_particles', type = int, help = 'Number of particles used in particle filter.', default = num_particles_default)
-    parser.add_argument('--sensor_limit', type = float, help = 'The distance in Gazebo the sensor can sense. ', default = sensor_limit_default)
+    parser.add_argument('--w', type = int, help = 'Map width.', default = window_width_default)
+    parser.add_argument('--h', type = int, help = 'Map height', default = window_height_default)
     
     argv = parser.parse_args()
 
-    window_width = window_width_default
-    window_height = window_height_default
-    num_particles = argv.num_particles
-    sensor_limit = argv.sensor_limit
-
+    window_width = argv.w
+    window_height = argv.h
     
-
-    
-    main(window_width = window_width, window_height = window_height, num_particles = num_particles, sensor_limit = sensor_limit)
+    main(window_width = window_width, window_height = window_height)

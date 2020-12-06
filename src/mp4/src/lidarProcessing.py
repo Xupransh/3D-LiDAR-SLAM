@@ -121,9 +121,9 @@ class LidarProcessing:
         self.x_points = x_points[indices]
         self.y_points = y_points[indices]
         self.z_points = z_points[indices]
-        print("og:",len(x_points))
-        print("maxz:", np.max(z_points))
-        print("minz:", np.min(z_points))
+        #print("og:",len(x_points))
+        #print("maxz:", np.max(z_points))
+        #print("minz:", np.min(z_points))
         def scale_to_255(a, min_val, max_val, dtype=np.uint8):
             a = (((a-min_val) / float(max_val - min_val) ) * 255).astype(dtype)
             tmp = copy.deepcopy(a)
@@ -132,18 +132,18 @@ class LidarProcessing:
             return a
 
         # clip based on height for pixel Values
-        i  = 0
-        length = len(self.x_points)
-        while i < length:
-            if (z_points[i] < self.height_range[0] or z_points[i] > self.height_range[1]):               
-                self.x_points = np.delete(self.x_points, i)
-                self.y_points = np.delete(self.y_points, i)
-                self.z_points = np.delete(self.z_points, i)
-                i -= 1
-                length -= 1
-                #print("hit")
-            i+=1
-        print("new:",len(self.x_points))
+        #i  = 0
+        #length = len(self.x_points)
+        #while i < length:
+        #    if (z_points[i] < self.height_range[0] or z_points[i] > self.height_range[1]):               
+        #        self.x_points = np.delete(self.x_points, i)
+        #        self.y_points = np.delete(self.y_points, i)
+        #        self.z_points = np.delete(self.z_points, i)
+        #        i -= 1
+        #        length -= 1
+        #        #print("hit")
+        #    i+=1
+        #print("new:",len(self.x_points))
         self.current_x_points = self.x_points
         self.current_y_points = self.y_points
 

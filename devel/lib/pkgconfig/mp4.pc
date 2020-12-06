@@ -1,0 +1,8 @@
+prefix=/home/akarshb2/3D-LiDAR-SLAM/devel
+
+Name: mp4
+Description: Description of mp4
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

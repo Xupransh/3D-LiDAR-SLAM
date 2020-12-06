@@ -1,0 +1,8 @@
+prefix=/home/akarshb2/3D-LiDAR-SLAM/install
+
+Name: gem_description
+Description: Description of gem_description
+Version: 1.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

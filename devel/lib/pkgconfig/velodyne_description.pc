@@ -1,0 +1,8 @@
+prefix=/home/akarshb2/3D-LiDAR-SLAM/devel
+
+Name: velodyne_description
+Description: Description of velodyne_description
+Version: 1.0.10
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

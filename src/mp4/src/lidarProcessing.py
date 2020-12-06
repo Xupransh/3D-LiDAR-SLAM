@@ -19,7 +19,7 @@ class LidarProcessing:
         self.resolution = resolution
         self.side_range = side_range
         self.fwd_range = fwd_range
-        self.height_range = (-2.15,2.15)
+        self.height_range = (-1.992, 3)
         self.sensor_limit = (abs(fwd_range[0]) + abs(fwd_range[1]) + abs(side_range[0]) + abs(side_range[1]))/4
         self.current_x_points = []
         self.current_y_points = []

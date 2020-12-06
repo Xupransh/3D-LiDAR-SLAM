@@ -1,0 +1,2 @@
+gem_description:gem_gazebo:mp4:velodyne/velodyne_description:velodyne/velodyne_gazebo_plugins
+-DCATKIN_DEVEL_PREFIX=/home/akarshb2/3D-LiDAR-SLAM/devel -DCMAKE_INSTALL_PREFIX=/home/akarshb2/3D-LiDAR-SLAM/install -G Unix Makefiles

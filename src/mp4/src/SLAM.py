@@ -11,6 +11,8 @@ from scipy.integrate import ode
 import cv2
 import matplotlib.pyplot as plt
 from maze import Maze, Robot
+from sensor_msgs.msg import Image
+from cv_bridge import CvBridge
 
 def quaternion_to_euler(x, y, z, w):
         t0 = +2.0 * (w * x + y * z)
@@ -41,7 +43,7 @@ class SLAM:
         self.width = width
         self.height = height
         self.prev_theta = 0
-        self.map = np.zeros((width, height), np.uint8) # RGB image for trajectory/obstacle mapping
+        self.map = np.zeros((width, height, 3), np.uint8) # RGB image for trajectory/obstacle mapping
         self.x_start = x_start              # The starting position of the map in the gazebo simulator
         self.y_start = y_start
         self.heading = heading             # The starting position of the map in the gazebo simulator
@@ -49,7 +51,9 @@ class SLAM:
         #self.controlSub = rospy.Subscriber("/gem/control", Float32MultiArray, self.__controlHandler, queue_size = 1)
         #self.birdsEyeViewPub = rospy.Publisher("/slam/map", self.map, queue_size=1)
         #self.pointCloudSub = rospy.Subscriber("/velodyne_points", PointCloud2, self.__pointCloudHandler, queue_size=10)
+        self.birdsEyeViewPub = rospy.Publisher("/mp4/BirdsEye", Image, queue_size=1)
         self.control = []                 # A list of control signal from the vehicle
+        self.cvBridge = CvBridge()
         
         return
     
@@ -92,8 +96,8 @@ class SLAM:
        
     def updateMap(self, state):
         #print(state)
-        x_points,y_points = self.robot.lidar.getCurrentPoints()
-        #curr_lidar = np.zeros((1000,1000),np.uint8)
+        x_points,y_points, z_points = self.robot.lidar.getCurrentPoints()
+        #curr_lidar = np.zeros((300,150),np.uint8)
         print("Lidar Points", len(x_points))
         
         #get orientation and pose
@@ -123,15 +127,16 @@ class SLAM:
             
             if (x >= self.width or y >= self.height):
                 continue
-            
+            #if (x_points[i]*10+200 >=  300  or y_points[i]*10+200 >= 150):
+            #    continue
             #print("X Plot:", x, ", Y Plot: ", y)
             #curr_lidar[x_points[i]*10+200,y_points[i]*10+200]= 255
-            self.map[x,y]= 255
+            self.map[x,y]= (255, 255, 255)
         #cv2.imshow("lidar",curr_lidar)
+        self.map[np.floor(x_pos)*5 + self.width/2 - self.x_start,np.floor(y_pos)*5 + self.height/2 - self.y_start]= (0, 255, 0)
         self.prev_theta = theta
-        cv2.imshow("map",self.map)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()                                                                                                                     
-
-
-            ###############
+        slam_map_im = self.cvBridge.cv2_to_imgmsg(self.map, 'bgr8')
+        self.birdsEyeViewPub.publish(slam_map_im)
+        #cv2.imshow("map",self.map)
+        #cv2.waitKey(0)
+        #cv2.destroyAllWindows()  

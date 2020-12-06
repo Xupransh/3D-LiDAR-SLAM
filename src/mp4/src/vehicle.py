@@ -101,4 +101,3 @@ if __name__ == "__main__":
             model.setModelState(currState, targetState)
 
     rospy.spin()
-    

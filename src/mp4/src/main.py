@@ -71,7 +71,7 @@ def main(window_width, window_height):
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser(description = 'Particle filter in maze.')
+    parser = argparse.ArgumentParser(description = 'SLAM in maze.')
 
     # The size of the python map
     window_width_default = 1200

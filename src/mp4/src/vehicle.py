@@ -2,15 +2,65 @@ import rospy
 from gazebo_msgs.msg import  ModelState
 from controller import bicycleModel
 import time
-from SLAM import SLAM
+from slam import SLAM
+from maze import Maze, Robot
 
 if __name__ == "__main__":
     rospy.init_node("model_dynamics")
     model = bicycleModel()
 
-    endList = 0
-    
+    parser = argparse.ArgumentParser(description = 'SLAM in maze.')
 
+    # The size of the python map
+    window_width_default = 1200
+    window_height_default = 750
+
+    # Default values for the parameters for particle filter
+    
+    parser.add_argument('--w', type = int, help = 'Map width.', default = window_width_default)
+    parser.add_argument('--h', type = int, help = 'Map height', default = window_height_default)
+    
+    argv = parser.parse_args()
+
+    window_width = argv.w
+    window_height = argv.h
+
+    endList = 0
+    y_start = 100
+    x_start = 15
+    width = 120
+    height = 75
+    maze_ted = np.zeros((height,width),dtype = np.int8)
+    for i in range(y_start,y_start+height):
+        for j in range(x_start,x_start+width):
+            if maze[i,j] == 1:
+                    maze_ted[i-y_start,j-x_start] |= 15
+            else:
+                if(i == 0):
+                    maze_ted[i-y_start,j-x_start] |= 1
+                elif(i == maze.shape[1]-1):
+                    maze_ted[i-y_start,j-x_start] |= 4
+                else:
+                    if maze[i+1,j] == 1:
+                        maze_ted[i-y_start,j-x_start] |= 4
+                    if maze[i-1,j] == 1:
+                        maze_ted[i-y_start,j-x_start] |= 1
+                
+                if(j == 0):
+                    maze_ted[i-y_start,j-x_start] |= 8
+                elif(j == maze.shape[1]-1):
+                    maze_ted[i-y_start,j-x_start] |= 2
+                else:
+                    if maze[i,j+1] == 1:
+                        maze_ted[i-y_start,j-x_start] |= 2
+                    if maze[i,j-1] == 1:
+                        maze_ted[i-y_start,j-x_start] |= 8
+    
+    world = Maze(maze = maze_ted, x_start = x_start, y_start = y_start))
+    bob = Robot(x = 0, y = 0,heading = 0, maze = world, sensor_limit = 20)
+    
+    # Run SLAM
+    slam = SLAM( robot=bob, width = window_width, height = window_height, x_start = bob.x + window_width/2, y_start = bob.y + window_height/2, heading = bob.heading)
     pos_list = [[100,53],[80,57],[60,56],[50,57],[40,58],[35,55],[34,44],[40,39],[45,40],[55,40],[68,40],[75,30],[75,28],[83,22],[104,22],[110,34],[102,39],[96,47]]
     pos_idx = 0
 
@@ -27,7 +77,8 @@ if __name__ == "__main__":
         currState =  model.getModelState()
         if not currState.success:
             continue
-
+        slam.updateMap(currState)
+    
 
         distToTargetX = abs(targetState.pose.position.x - currState.pose.position.x)
         distToTargetY = abs(targetState.pose.position.y - currState.pose.position.y)

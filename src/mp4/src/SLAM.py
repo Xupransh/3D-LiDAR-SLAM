@@ -10,6 +10,7 @@ from sensor_msgs.msg import PointCloud2
 from scipy.integrate import ode
 import cv2
 import matplotlib.pyplot as plt
+from maze import Maze, Robot
 
 def vehicle_dynamics(t, vars, vr, delta):
     curr_x = vars[0]
@@ -70,7 +71,8 @@ class SLAM:
         
     #     return [position.x, position.y, yaw, velocity.x]
        
-    def updateMap(self):
+    def updateMap(self, state):
+        print(state)
         x_points,y_points = self.robot.lidar.getCurrentPoints()
         curr_lidar = np.zeros((1000,1000),np.uint8)
         print("x", len(x_points))
@@ -102,22 +104,5 @@ class SLAM:
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
-
-    def runSLAM(self):
-        """
-        Description:
-            Run LiDAR SLAM
-        """
-        counter = 0
-        while True:
-            ## TODO #####
-            
-            # Display robot and update and show map
-            # self.world.show_particles(particles = self.particles, show_frequency = 10)
-            # self.world.show_robot(robot = self.robot)
-            # self.world.clear_objects()
-            counter += 1
-            print(counter)
-            self.updateMap()
 
             ###############

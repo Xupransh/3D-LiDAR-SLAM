@@ -9,6 +9,7 @@ from std_msgs.msg import Float32MultiArray
 from sensor_msgs.msg import PointCloud2
 from scipy.integrate import ode
 import cv2
+import matplotlib.pyplot as plt
 
 def vehicle_dynamics(t, vars, vr, delta):
     curr_x = vars[0]
@@ -25,14 +26,14 @@ class SLAM:
         self.robot = robot
         self.width = width
         self.height = height
-        self.map = np.zeros((width, height, 3)) # RGB image for trajectory/obstacle mapping
+        self.map = np.zeros((width, height), np.uint8) # RGB image for trajectory/obstacle mapping
         self.x_start = x_start              # The starting position of the map in the gazebo simulator
         self.y_start = y_start
         self.original_heading = heading             # The starting position of the map in the gazebo simulator
-        self.modelStatePub = rospy.Publisher("/gazebo/set_model_state", ModelState, queue_size=1)
-        self.controlSub = rospy.Subscriber("/gem/control", Float32MultiArray, self.__controlHandler, queue_size = 1)
-        self.birdsEyeViewPub = rospy.Publisher("/slam/map", self.map, queue_size=1)
-        self.pointCloudSub = rospy.Subscriber("/velodyne_points", PointCloud2, self.__pointCloudHandler, queue_size=10)
+        #self.modelStatePub = rospy.Publisher("/gazebo/set_model_state", ModelState, queue_size=1)
+        #self.controlSub = rospy.Subscriber("/gem/control", Float32MultiArray, self.__controlHandler, queue_size = 1)
+        #self.birdsEyeViewPub = rospy.Publisher("/slam/map", self.map, queue_size=1)
+        #self.pointCloudSub = rospy.Subscriber("/velodyne_points", PointCloud2, self.__pointCloudHandler, queue_size=10)
         self.control = []                 # A list of control signal from the vehicle
         
         return
@@ -68,32 +69,46 @@ class SLAM:
     #     roll, pitch, yaw = quaternion_to_euler(orientation.x, orientation.y, orientation.z, orientation.w)
         
     #     return [position.x, position.y, yaw, velocity.x]
-    
-    def updateMap():
+       
+    def updateMap(self):
         x_points,y_points = self.robot.lidar.getCurrentPoints()
-        
+        curr_lidar = np.zeros((1000,1000),np.uint8)
+        print("x", len(x_points))
         x_pos = self.robot.x
         y_pos = self.robot.y
 
-        self.map[x_pos,y_pos]= [0,255,0]
-        length  = len(x_points)
-        for i range(length):
-            x = np.floor(x_points[i]*np.cos(self.robot.heading))
-            y = np.floor(y_points[i]*np.sin(self.robot.heading))
+        print("X: " ,x_pos, '     Y: ', y_pos)
 
-            x += self.width/2 + x_pos
-            y += self.height/2 +y_pos
+        length =  len(x_points)
+        for i in range(0, length):
+            #print("loop", i)
+            theta = np.degrees(self.robot.heading)
+            
+            rot = np.array([[np.cos(theta), -np.sin(theta),0],[np.sin(theta), np.cos(theta), 0],[0,0,1]])
+            curr_i = np.array([x_points[i], y_points[i], 0])
+            curr = np.transpose(curr_i)
+            trans = np.transpose(np.matmul(rot,curr))
 
-            self.map[x,y]= [255,255,255]
-            cv2.imshow(self.map)
-            cv2.waitKey(0)
-            cv2.destroyAllWindows()
+            x = int(x_pos*trans[0])
+            y = int(y_pos*trans[1])
+
+            
+            
+ 
+            #curr_lidar[x_points[i]*10+200,y_points[i]*10+200]= 255
+            self.map[x,y]= 255
+        #cv2.imshow("lidar",curr_lidar)
+        cv2.imshow("map",self.map)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+
 
     def runSLAM(self):
         """
         Description:
             Run LiDAR SLAM
         """
+        counter = 0
         while True:
             ## TODO #####
             
@@ -101,6 +116,8 @@ class SLAM:
             # self.world.show_particles(particles = self.particles, show_frequency = 10)
             # self.world.show_robot(robot = self.robot)
             # self.world.clear_objects()
+            counter += 1
+            print(counter)
             self.updateMap()
 
             ###############

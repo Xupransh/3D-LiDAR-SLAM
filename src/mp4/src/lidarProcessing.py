@@ -14,20 +14,21 @@ import copy
 
 
 class LidarProcessing:
-    def __init__(self, resolution=0.5, side_range=(-5., 5.), fwd_range=(0., 15.),
-                         height_range=(-1, 1)):
+    def __init__(self, resolution=0.5, side_range=(-2., 2.), fwd_range=(0., 2.),
+                         height_range=(0.45, 0.46)):
         self.resolution = resolution
         self.side_range = side_range
         self.fwd_range = fwd_range
-        self.height_range = height_range
+        self.height_range = (-0.5,1)
         self.sensor_limit = (abs(fwd_range[0]) + abs(fwd_range[1]) + abs(side_range[0]) + abs(side_range[1]))/4
-
+        self.current_x_points = []
+        self.current_y_points = []
         self.cvBridge = CvBridge()
 
         # random size initial image
         self.__birds_eye_view =  np.zeros((200, 100))
 
-        self.birdsEyeViewPub = rospy.Publisher("/mp4/BirdsEye", Image, queue_size=1)
+        #self.birdsEyeViewPub = rospy.Publisher("/mp4/BirdsEye", Image, queue_size=1)
         self.pointCloudSub = rospy.Subscriber("/velodyne_points", PointCloud2, self.__pointCloudHandler, queue_size=10)
         x_img = np.floor(-0 / self.resolution).astype(np.int32)
         self.vehicle_x = x_img - int(np.floor(self.side_range[0] / self.resolution))
@@ -58,6 +59,10 @@ class LidarProcessing:
 
         self.x_rear_right = float('nan')
         self.y_rear_right = float('nan')
+        
+        self.x_points = []
+        self.y_points = []
+        self.z_points = []
 
     def getBirdsEyeView(self):
         return self.__birds_eye_view
@@ -113,10 +118,12 @@ class LidarProcessing:
         filter = np.logical_and(x_filter, y_filter)
         indices = np.argwhere(filter).flatten()
 
-        x_points = x_points[indices]
-        y_points = y_points[indices]
-        z_points = z_points[indices]
-
+        self.x_points = x_points[indices]
+        self.y_points = y_points[indices]
+        self.z_points = z_points[indices]
+        print("og:",len(x_points))
+        print("maxz:", np.max(z_points))
+        print("minz:", np.min(z_points))
         def scale_to_255(a, min_val, max_val, dtype=np.uint8):
             a = (((a-min_val) / float(max_val - min_val) ) * 255).astype(dtype)
             tmp = copy.deepcopy(a)
@@ -125,63 +132,20 @@ class LidarProcessing:
             return a
 
         # clip based on height for pixel Values
-        pixel_vals = np.clip(a=z_points, a_min=self.height_range[0], a_max=self.height_range[1])
-
-        pixel_vals = scale_to_255(pixel_vals, min_val=self.height_range[0], max_val=self.height_range[1])
-        
-        # Getting sensor reading for left       
-        filter_left = np.logical_and((x_points>-0.1), (x_points<0.1))
-        filter_left = np.logical_and(filter_left, y_points > 0)
-        filter_left = np.logical_and(filter_left, pixel_vals > 128)
-        indices = np.argwhere(filter_left).flatten()
-
-        self.x_left = np.mean(x_points[indices])
-        self.y_left = np.mean(y_points[indices])
-        
-        # Getting sensor reading for right       
-        filter_right = np.logical_and((x_points>-0.1), (x_points<0.1))
-        filter_right = np.logical_and(filter_right, y_points < 0)
-        filter_right = np.logical_and(filter_right, pixel_vals > 128)
-        indices = np.argwhere(filter_right).flatten()
-
-        self.x_right = np.mean(x_points[indices])
-        self.y_right = np.mean(y_points[indices])
-        
-        # Getting sensor reading for rear       
-        filter_rear = np.logical_and((y_points>-0.1), (y_points<0.1))
-        filter_rear = np.logical_and(filter_rear, x_points < 0)
-        filter_rear = np.logical_and(filter_rear, pixel_vals > 128)
-        indices = np.argwhere(filter_rear).flatten()
-
-        self.x_rear = np.mean(x_points[indices])
-        self.y_rear = np.mean(y_points[indices])
-
-        # Getting sensor reading for front       
-        filter_front = np.logical_and((y_points>-0.1), (y_points<0.1))
-        filter_front = np.logical_and(filter_front, x_points > 0)
-        filter_front = np.logical_and(filter_front, pixel_vals > 128)
-        indices = np.argwhere(filter_front).flatten()
-
-        self.x_front = np.mean(x_points[indices])
-        self.y_front = np.mean(y_points[indices])
-        
-
-        # convert points to image coords with resolution
-        x_img = np.floor(-y_points / self.resolution).astype(np.int32)
-        y_img = np.floor(-x_points / self.resolution).astype(np.int32)
-
-        # shift coords to new original
-        x_img -= int(np.floor(self.side_range[0] / self.resolution))
-        y_img += int(np.ceil(self.fwd_range[1] / self.resolution))
-            
-        self.current_x_points = x_img
-        self.current_y_points = y_img
-
-        im[y_img, x_img] = pixel_vals
-
-        self.__birds_eye_view = im
-
-        self.birdsEyeViewPub.publish(im)
+        i  = 0
+        length = len(self.x_points)
+        while i < length:
+            if (z_points[i] < self.height_range[0] or z_points[i] > self.height_range[1]):               
+                self.x_points = np.delete(self.x_points, i)
+                self.y_points = np.delete(self.y_points, i)
+                self.z_points = np.delete(self.z_points, i)
+                i -= 1
+                length -= 1
+                #print("hit")
+            i+=1
+        print("new:",len(self.x_points))
+        self.current_x_points = self.x_points
+        self.current_y_points = self.y_points
 
     def convert_to_image(self, x, y):
         x_img = np.floor(-y / self.resolution).astype(np.int32)

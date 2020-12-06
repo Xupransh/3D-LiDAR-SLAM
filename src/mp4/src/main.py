@@ -69,10 +69,10 @@ def main(window_width, window_height, num_particles, sensor_limit):
     # pf.runFilter()
     
     # Run SLAM
-    w = 200
-    h = 200
+    w = 1200
+    h = 750
 
-    slam = SLAM( robot=bob, width = w, height = h, x_start = bob.x + w/2, y_start = bob.y + h/2, heading = robot.heading)
+    slam = SLAM( robot=bob, width = w, height = h, x_start = bob.x + w/2, y_start = bob.y + h/2, heading = bob.heading)
     slam.runSLAM()
     
     

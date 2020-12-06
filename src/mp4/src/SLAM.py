@@ -31,6 +31,7 @@ class SLAM:
         self.original_heading = heading             # The starting position of the map in the gazebo simulator
         self.modelStatePub = rospy.Publisher("/gazebo/set_model_state", ModelState, queue_size=1)
         self.controlSub = rospy.Subscriber("/gem/control", Float32MultiArray, self.__controlHandler, queue_size = 1)
+        self.birdsEyeViewPub = rospy.Publisher("/slam/map", self.map, queue_size=1)
         self.pointCloudSub = rospy.Subscriber("/velodyne_points", PointCloud2, self.__pointCloudHandler, queue_size=10)
         self.control = []                 # A list of control signal from the vehicle
         
@@ -60,13 +61,13 @@ class SLAM:
             rospy.loginfo("Service did not process request: "+str(exc))
         return modelState
 
-    def currentPoseToArray(self, currentPose):
-        position = currentPose.pose.position
-        velocity = currentPose.twist.linear
-        orientation = currentPose.pose.orientation
-        roll, pitch, yaw = quaternion_to_euler(orientation.x, orientation.y, orientation.z, orientation.w)
+    # def currentPoseToArray(self, currentPose):
+    #     position = currentPose.pose.position
+    #     velocity = currentPose.twist.linear
+    #     orientation = currentPose.pose.orientation
+    #     roll, pitch, yaw = quaternion_to_euler(orientation.x, orientation.y, orientation.z, orientation.w)
         
-        return [position.x, position.y, yaw, velocity.x]
+    #     return [position.x, position.y, yaw, velocity.x]
     
     def updateMap():
         x_points,y_points = self.robot.lidar.getCurrentPoints()
@@ -95,14 +96,11 @@ class SLAM:
         """
         while True:
             ## TODO #####
-            # Finish this function to have the particle filter running
             
-            # Read sensor msg
-            
-            # Display robot and particles on map 
-            self.world.show_particles(particles = self.particles, show_frequency = 10)
-            self.world.show_robot(robot = self.bob)
-            self.world.clear_objects()
+            # Display robot and update and show map
+            # self.world.show_particles(particles = self.particles, show_frequency = 10)
+            # self.world.show_robot(robot = self.robot)
+            # self.world.clear_objects()
             self.updateMap()
 
             ###############

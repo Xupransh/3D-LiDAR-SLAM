@@ -8,7 +8,7 @@ from gazebo_msgs.msg import  ModelState
 from gazebo_msgs.srv import GetModelState
 from maze import Maze, Robot
 from particle_filter import particleFilter
-from SLAM import SLAM
+from slam import SLAM
 
 def main(window_width, window_height, num_particles, sensor_limit):
     rospy.init_node("navigator")
@@ -99,7 +99,7 @@ if __name__ == '__main__':
     num_particles = argv.num_particles
     sensor_limit = argv.sensor_limit
 
-    image = np.zeros()
+    
 
     
-    main(window_width = window_width, window_height = window_height, num_particles = num_particles, sensor_limit = sensor_limit, map= image)
+    main(window_width = window_width, window_height = window_height, num_particles = num_particles, sensor_limit = sensor_limit)

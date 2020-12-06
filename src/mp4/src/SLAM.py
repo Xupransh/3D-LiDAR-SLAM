@@ -76,7 +76,7 @@ class SLAM:
         y_pos = self.robot.y
 
         self.map[x_pos,y_pos]= [0,255,0]
-
+        length  = len(x_points)
         for i range(length):
             x = np.floor(x_points[i]*np.cos(self.robot.heading))
             y = np.floor(y_points[i]*np.sin(self.robot.heading))

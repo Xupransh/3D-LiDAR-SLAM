@@ -75,11 +75,9 @@ class SLAM:
         print(state)
         x_points,y_points = self.robot.lidar.getCurrentPoints()
         curr_lidar = np.zeros((1000,1000),np.uint8)
-        print("x", len(x_points))
         x_pos = self.robot.x
         y_pos = self.robot.y
 
-        print("X: " ,x_pos, '     Y: ', y_pos)
 
         length =  len(x_points)
         for i in range(0, length):

@@ -14,7 +14,7 @@ import copy
 
 
 class LidarProcessing:
-    def __init__(self, resolution=0.5, side_range=(-2., 2.), fwd_range=(0., 2.),
+    def __init__(self, resolution=0.5, side_range=(-4, 4.), fwd_range=(0., 2.),
                          height_range=(0.45, 0.46)):
         self.resolution = resolution
         self.side_range = side_range

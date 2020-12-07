@@ -2,9 +2,10 @@ import rospy
 from gazebo_msgs.msg import  ModelState
 from controller import bicycleModel
 import time
-from slam import SLAM
+from SLAM import SLAM
 from maze import Maze, Robot
-
+import argparse
+import numpy as np
 if __name__ == "__main__":
     rospy.init_node("model_dynamics")
     model = bicycleModel()
@@ -12,8 +13,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description = 'SLAM in maze.')
 
     # The size of the python map
-    window_width_default = 1200
-    window_height_default = 750
+    window_width_default = 3000
+    window_height_default = 3000
 
     # Default values for the parameters for particle filter
     
@@ -24,7 +25,7 @@ if __name__ == "__main__":
 
     window_width = argv.w
     window_height = argv.h
-
+    maze = np.zeros((200,200))
     endList = 0
     y_start = 100
     x_start = 15
@@ -56,11 +57,16 @@ if __name__ == "__main__":
                     if maze[i,j-1] == 1:
                         maze_ted[i-y_start,j-x_start] |= 8
     
-    world = Maze(maze = maze_ted, x_start = x_start, y_start = y_start))
+    world = Maze(maze = maze_ted, x_start = x_start, y_start = y_start)
     bob = Robot(x = 0, y = 0,heading = 0, maze = world, sensor_limit = 20)
     
     # Run SLAM
-    slam = SLAM( robot=bob, width = window_width, height = window_height, x_start = bob.x + window_width/2, y_start = bob.y + window_height/2, heading = bob.heading)
+    currModelState =  model.getModelState()
+    euler = model.quaternion_to_euler(currModelState.pose.orientation.x,
+                                    currModelState.pose.orientation.y,
+                                    currModelState.pose.orientation.z,
+                                    currModelState.pose.orientation.w)
+    slam = SLAM( robot=bob, width = window_width, height = window_height, x_start = currModelState.pose.position.x , y_start = currModelState.pose.position.y, heading = euler[2])
     pos_list = [[100,53],[80,57],[60,56],[50,57],[40,58],[35,55],[34,44],[40,39],[45,40],[55,40],[68,40],[75,30],[75,28],[83,22],[104,22],[110,34],[102,39],[96,47]]
     pos_idx = 0
 
@@ -95,4 +101,3 @@ if __name__ == "__main__":
             model.setModelState(currState, targetState)
 
     rospy.spin()
-    

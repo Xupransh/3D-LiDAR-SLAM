@@ -19,10 +19,11 @@ class LidarProcessing:
         self.resolution = resolution
         self.side_range = side_range
         self.fwd_range = fwd_range
-        self.height_range = (-0.5,1)
+        self.height_range = (-2.15,2.15)
         self.sensor_limit = (abs(fwd_range[0]) + abs(fwd_range[1]) + abs(side_range[0]) + abs(side_range[1]))/4
         self.current_x_points = []
         self.current_y_points = []
+        self.current_z_points = []
         self.cvBridge = CvBridge()
 
         # random size initial image
@@ -68,7 +69,7 @@ class LidarProcessing:
         return self.__birds_eye_view
 
     def getCurrentPoints(self):
-        return self.current_x_points, self.current_y_points
+        return self.current_x_points, self.current_y_points,  self.current_z_points
 
 
     def __pointCloudHandler(self, data):
@@ -88,7 +89,6 @@ class LidarProcessing:
 
     def construct_birds_eye_view(self, data):
         """
-
     def transformPointCloud(self):
             Call back function that get the distance between vehicle and nearest wall in given direction
             The calculated values are stored in the class member variables
@@ -110,6 +110,10 @@ class LidarProcessing:
         x_points = data[:, 0]
         y_points = data[:, 1]
         z_points = data[:, 2]
+        f = open('z.txt', 'w')
+        f.write(str(z_points))
+        f.close()
+    
 
         # Only keep points in the range specified above
         x_filter = np.logical_and((x_points >= self.fwd_range[0]), (x_points <= self.fwd_range[1]))
@@ -121,9 +125,9 @@ class LidarProcessing:
         self.x_points = x_points[indices]
         self.y_points = y_points[indices]
         self.z_points = z_points[indices]
-        print("og:",len(x_points))
-        print("maxz:", np.max(z_points))
-        print("minz:", np.min(z_points))
+        #print("og:",len(x_points))
+        #print("maxz:", np.max(z_points))
+        #print("minz:", np.min(z_points))
         def scale_to_255(a, min_val, max_val, dtype=np.uint8):
             a = (((a-min_val) / float(max_val - min_val) ) * 255).astype(dtype)
             tmp = copy.deepcopy(a)
@@ -135,7 +139,7 @@ class LidarProcessing:
         i  = 0
         length = len(self.x_points)
         while i < length:
-            if (z_points[i] < self.height_range[0] or z_points[i] > self.height_range[1]):               
+            if (z_points[i] < self.height_range[0] or z_points[i] > self.height_range[1]):
                 self.x_points = np.delete(self.x_points, i)
                 self.y_points = np.delete(self.y_points, i)
                 self.z_points = np.delete(self.z_points, i)
@@ -143,9 +147,10 @@ class LidarProcessing:
                 length -= 1
                 #print("hit")
             i+=1
-        print("new:",len(self.x_points))
+        #print("new:",len(self.x_points))
         self.current_x_points = self.x_points
         self.current_y_points = self.y_points
+        self.current_z_points = self.z_points
 
     def convert_to_image(self, x, y):
         x_img = np.floor(-y / self.resolution).astype(np.int32)
